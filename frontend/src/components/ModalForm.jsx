@@ -27,13 +27,9 @@ export default function ModalForm({ isOpen, onClose, mode, onSubmit, clientData 
                 isactive: status
             };
             await onSubmit(formData);
-            onClose(); // Close the modal after submission
         } catch (error) {
-            console.error('Error adding client:', error);
-            
+            console.error('Error submitting form:', error);
         }
-        onClose(); // Close the modal after submission
-        // onSubmit({ name, email, job, rate, status });
     }
 
     useEffect(() => {
@@ -57,9 +53,10 @@ export default function ModalForm({ isOpen, onClose, mode, onSubmit, clientData 
             {/* You can open the modal using document.getElementById('ID').showModal() method */}
             <dialog id="my_modal_3" className="modal" open={isOpen}>
                 <div className="modal-box">
+                    <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={onClose}>✕</button>
                     <h3 className="font-bold text-lg py-4">{mode === 'edit' ? 'Edit Client' : 'Client Details'}</h3>
-                    <form method="dialog" onSubmit={handleSubmit} className="flex flex-col">  
-                        {/* if there is a button in form, it will close the modal */}
+                    <form onSubmit={handleSubmit} className="flex flex-col">  
+                        {/* Removed method="dialog" and moved close button outside form */}
                         
                         <label className="input input-bordered flex items-center gap-2 mb-4 w-full">
                             Name
@@ -85,8 +82,7 @@ export default function ModalForm({ isOpen, onClose, mode, onSubmit, clientData 
                         </select>
                         </div>
 
-                        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2" onClick={onClose}>✕</button>
-                        <button className="btn btn-success">{mode === 'edit' ? 'Save Changes' : 'Add Client'}</button>
+                        <button type="submit" className="btn btn-success">{mode === 'edit' ? 'Save Changes' : 'Add Client'}</button>
                     </form>
                 </div>
             </dialog>
