@@ -1,11 +1,30 @@
-export default function TableList({ handleOpen }) {
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 
-    const clients = [
-        {id: 1, name: "John Doe", email: "john.doe@gmail.com", job: "Developer", rate: 100, isActive: true},
-        {id: 2, name: "Jane Smith", email: "jane.smith@gmail.com", job: "Designer", rate: 120, isActive: false},
-        {id: 3, name: "Alice Johnson", email: "alice.johnson@gmail.com", job: "Manager", rate: 150, isActive: true},
-        {id: 4, name: "Bob Brown", email: "bob.brown@gmail.com", job: "Developer", rate: 100, isActive: true}
-    ]
+export default function TableList({ handleOpen, searchQuery }) {
+
+    const [tableData, setTableData] = useState([]);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await axios.get('http://localhost:8000/api/clients');
+                setTableData(response.data);
+            } catch (err) {
+                setError(err.message);
+            }
+        };
+        fetchData();
+    }, []);
+
+    const filteredData = tableData.filter(client => {
+        return (
+            client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            client.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            client.job.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+    });
 
     return (
         <>
@@ -24,8 +43,8 @@ export default function TableList({ handleOpen }) {
                     </thead>
                     <tbody className="hover:bg-base-300">
                         {/* row 1 */}
-                        {clients.map((client) => (
-                            <tr>
+                        {filteredData.map((client) => (
+                            <tr key={client.id} onClick={() => handleOpen('edit', client)}>
                                 <th>{client.id}</th>
                                 <td>{client.name}</td>
                                 <td>{client.email}</td>
@@ -37,7 +56,7 @@ export default function TableList({ handleOpen }) {
                                     </button>
                                 </td>
                                 <td>
-                                    <button onClick={() => handleOpen('edit')} className="btn btn-accent">Update</button>
+                                    <button onClick={() => handleOpen('edit', client)} className="btn btn-accent">Update</button>
                                 </td>
                                 <td>
                                     <button className="btn btn-error">Delete</button>
